@@ -14,6 +14,7 @@ A set of Bash scripts for automating WordPress deployments to WP Engine environm
 7. [Optional Bash Aliases](#optional-bash-aliases)
 8. [Contributing](#contributing)
 9. [License](#license)
+10. [Changelog](#changelog)
 
 ---
 
@@ -158,3 +159,9 @@ Feel free to open issues or suggestions for improvements.
 ## License
 
 Check [the license file](LICENSE) in this repository for details.
+
+---
+
+## Changelog
+
+See [the changelog file](CHANGELOG.md) for details.
