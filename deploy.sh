@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# deploy.sh - A Bash adaptation of the Python Fabric script
-#             for deploying a WordPress blog to WP Engine.
+# deploy.sh - A Bash script for deploying a WordPress blog to WP Engine using GIT PUSH
 #
 # Usage:
 #   ./deploy.sh <environment> <task>
@@ -265,10 +264,9 @@ function perform_gitpush() {
 ###############################################################################
 function decrypt_env_inside_deploy_folder() {
   echo "[SUB] Decrypting .env for environment: ${APP_ENV}"
-  # Example placeholder command; update as needed:
-  # gpg --quiet --batch --yes --passphrase-file "${GPG_PARAPHRASE_PATH}" \
-  #     --decrypt --output "${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}" \
-  #     "${PATH_TO_BLOG_REPO}/${WP_ENV_DIR}/env_${APP_ENV}.gpg"
+   gpg --quiet --batch --yes --passphrase-file "${GPG_PARAPHRASE_PATH}" \
+       --decrypt --output "${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}" \
+       "${PATH_TO_BLOG_REPO}/${WP_ENV_DIR}/env_${APP_ENV}.gpg"
   echo "   (Simulation) Decryption complete, check ${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}"
 }
 
