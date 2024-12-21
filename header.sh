@@ -29,14 +29,28 @@ set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 # ------------------------------------------------------------------------------
+# Detect whether we are in Bash or Zsh to handle $BASH_SOURCE vs. $0
+# ------------------------------------------------------------------------------
+if [ -n "$BASH_VERSION" ]; then
+  # In Bash, we can rely on BASH_SOURCE
+  SCRIPT_SOURCE="${BASH_SOURCE[0]}"
+elif [ -n "$ZSH_VERSION" ]; then
+  # In Zsh, $BASH_SOURCE isn't set, so we fallback to $0
+  SCRIPT_SOURCE="$0"
+else
+  # Fallback for other shells (sh, dash, etc.) — $0 is often the script name
+  SCRIPT_SOURCE="$0"
+fi
+
+# ------------------------------------------------------------------------------
 # Compute the absolute path of the current script's directory.
 # Explanation:
-#   1. BASH_SOURCE[0] is the path to this script (even if sourced).
-#   2. dirname extracts the parent directory from that path.
-#   3. cd changes into that directory (>/dev/null 2>&1 silences output/errors).
-#   4. pwd returns the absolute path of the directory.
+#   1. dirname extracts the parent directory from that path.
+#   2. cd changes into that directory (>/dev/null 2>&1 silences output/errors).
+#   3. pwd returns the absolute path of the directory.
+#   4. use -P to resolve symlinks
 # ------------------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" >/dev/null 2>&1 && pwd -P)"
 
 # ------------------------------------------------------------------------------
 # Source additional environment variables from env.sh
