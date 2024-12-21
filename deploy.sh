@@ -212,7 +212,7 @@ function do_composer_install() {
   echo "[SUB] Running Composer install..."
   (
     cd "${PATH_TO_BLOG_REPO}" || exit 1
-    sudo composer update --no-dev --optimize-autoloader --prefer-dist -vv
+    composer update --no-dev --optimize-autoloader --prefer-dist -vv
   )
 }
 
@@ -234,7 +234,7 @@ function remove_ignored_files() {
     cd "${PATH_TO_BLOG_REPO}" || exit 1
     for item in "${list_of_files_to_delete[@]}"; do
       echo " - Removing: ${item}"
-      sudo rm -rf "${item}"
+      rm -rf "${item}"
     done
   )
 }
