@@ -30,7 +30,7 @@
 #------------------------------------------------------------------------------
 # GITHUB & WP ENGINE REPOSITORY/SSH PLACEHOLDERS
 #------------------------------------------------------------------------------
-# TODO: Adjust these values to match your own GitHub & WP Engine environments.
+# todo: Adjust these values to match your own GitHub & WP Engine environments.
 ## Your Project's Git repo
 export BLOG_GIT_REPO="git@github.com:YOURORG/YOURPROJECT.git"
 ## WP Engine Git repos - DEV, STAG, PROD
@@ -41,6 +41,10 @@ export WPE_GIT_PROD="git@git.wpengine.com:production/ENVprod.git"
 export WPE_SSH_DEV="ssh ENVdevblog@ENVdevblog.ssh.wpengine.net"
 export WPE_SSH_STAG="ssh ENVstag@ENVstag.ssh.wpengine.net"
 export WPE_SSH_PROD="ssh ENVprod@ENVprod.ssh.wpengine.net"
+#------------------------------------------------------------------------------
+# todo: Enable GPG encryption/decryption is you are using it like I do.
+#------------------------------------------------------------------------------
+export RUN_GPG_DECRYPT="false"  # true or false
 
 #------------------------------------------------------------------------------
 # BASIC VARIABLES
