@@ -70,9 +70,9 @@ This repository provides a convenient way to manage WordPress deployment flows t
    chmod +x header.sh
     ```
 3. Edit env.sh:
-  - Set BLOG_GIT_REPO="git@github.com:YOURORG/YOURPROJECT.git".
-  - Configure the WP Engine Git repos (WPE_GIT_DEV, WPE_GIT_STAG, WPE_GIT_PROD) and SSH credentials (WPE_SSH_DEV, etc.).
-  - Set RUN_GPG_DECRYPT="true" if you want the script to decrypt .env files using GPG (otherwise set it to false).
+  - Set `BLOG_GIT_REPO="git@github.com:YOURORG/YOURPROJECT.git"`.
+  - Configure the WP Engine Git repos (`WPE_GIT_DEV`, `WPE_GIT_STAG`, `WPE_GIT_PROD`) and SSH credentials (`WPE_SSH_DEV`, etc.).
+  - Set `RUN_GPG_DECRYPT="true"` if you want the script to decrypt `.env` files using GPG (otherwise set it to false).
 
 ---
 
