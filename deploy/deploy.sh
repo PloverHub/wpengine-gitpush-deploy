@@ -8,28 +8,20 @@
 # Environments: dev, stag, prod
 #
 # Tasks:
-#   readme  - Prints overview
 #   init    - Sets up the tmp folder, clones the blog repo from $BLOG_GIT_REPO,
 #             optionally decrypts .env
-#   push    - Prepares the local repo (branch, composer, file cleanup) and
-#             pushes to WP Engine
-#   deploy  - A convenience task combining 'init' + 'push' in one go
+#   prep    - Prepares the repo: composer + clean up
+#   push    - Sets remote and force pushes to WP Engine
+#   deploy  - Combines init + prep + push
 #
-# Examples:
-#   ./deploy.sh dev readme
-#   ./deploy.sh dev init
-#   ./deploy.sh dev push
-#   ./deploy.sh dev deploy
-#
-# Note: The GitHub repo is NOT passed as an argument. Instead, it is
-#       taken from BLOG_GIT_REPO set in env.sh.
+# Note: BLOG_GIT_REPO is sourced from config/env.sh
 #
 # Author:  Wasseem Khayrattee
 # GitHub:  https://github.com/wkhayrattee
 #------------------------------------------------------------------------------
 
 ###############################################################################
-# Maximum portability: detect shell, define SCRIPT_DIR, source header.sh
+# 1. Detect script directory and load bootstrap header
 ###############################################################################
 if [ -n "$BASH_VERSION" ]; then
   SCRIPT_SOURCE="${BASH_SOURCE[0]}"
@@ -43,7 +35,7 @@ SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" >/dev/null 2>&1 && pwd -P)"
 source "${SCRIPT_DIR}/header.sh"
 
 ###############################################################################
-# Parse arguments: <environment> <task>
+# 2. Parse arguments
 ###############################################################################
 ENVIRONMENT="${1:-}"
 TASK="${2:-}"
@@ -52,12 +44,12 @@ if [[ -z "$ENVIRONMENT" || -z "$TASK" ]]; then
   echo "[Error] Not enough arguments!"
   echo "Usage: $0 <environment> <task>"
   echo "Where <environment> is one of: dev, stag, prod"
-  echo "      <task> is one of: readme, init, push, deploy"
+  echo "      <task> is one of: init, prep, push, deploy"
   exit 1
 fi
 
 ###############################################################################
-# 3. Configure environment (dev, stag, prod)
+# 3. Configure environment
 ###############################################################################
 case "$ENVIRONMENT" in
   dev)
@@ -89,15 +81,10 @@ case "$ENVIRONMENT" in
 esac
 
 ###############################################################################
-# 4. Define Functions ("tasks")
+# 4. Define Task Functions
 ###############################################################################
 
-#------------------------------------------------------------------------------
-# init() - Prepares tmp folder, clones blog repo from $BLOG_GIT_REPO,
-#              optionally decrypts .env if RUN_GPG_DECRYPT=true
-#------------------------------------------------------------------------------
 function init() {
-  # Ensure BLOG_GIT_REPO is defined in env.sh
   if [[ -z "${BLOG_GIT_REPO}" ]]; then
     echo "[Error] BLOG_GIT_REPO not defined in env.sh"
     exit 1
@@ -117,7 +104,6 @@ function init() {
     git clone "${BLOG_GIT_REPO}" "${BLOG_REPO_NAME}"
   )
 
-  # Conditionally decrypt .env
   if [[ "${RUN_GPG_DECRYPT}" == "true" ]]; then
     echo "[INIT] RUN_GPG_DECRYPT=true; proceeding to decrypt .env..."
     decrypt_env_inside_deploy_folder
@@ -126,7 +112,6 @@ function init() {
     echo "[INIT] RUN_GPG_DECRYPT=false; skipping .env decryption..."
   fi
 
-  # Check existence of .env
   local env_file="${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}"
   if [[ -f "$env_file" ]]; then
     echo "[INIT] Found .env: $env_file"
@@ -138,14 +123,10 @@ function init() {
   print_separator
 }
 
-#------------------------------------------------------------------------------
-# prepare_repo_before_push() - Prepares the local repo (branch, composer, file cleanup) + push
-#------------------------------------------------------------------------------
 function prepare_repo_before_push() {
   print_separator
   echo "[PREP] Preparing repo before push..."
 
-  # Checkout new branch
   echo "[PREP] Checking out new branch: wpe-${APP_ENV}-${THIS_TIMESTAMP}"
   (
     safe_cd "${PATH_TO_BLOG_REPO}"
@@ -154,30 +135,19 @@ function prepare_repo_before_push() {
   )
 
   sub_prep_repo
-
   echo "[PREP] Repo preparation complete."
   print_separator
 }
 
-
-#------------------------------------------------------------------------------
-# push() - Prepares the local repo (branch, composer, file cleanup) + push
-#------------------------------------------------------------------------------
 function push() {
   print_separator
   echo "[PUSH] Starting push sequence..."
-
   set_upstream
   perform_gitpush
-
   echo "[PUSH] Push complete."
   print_separator
 }
 
-
-#------------------------------------------------------------------------------
-# deploy() - A one-step command that calls init + prep + push
-#------------------------------------------------------------------------------
 function deploy() {
   print_separator
   echo "[DEPLOY] Doing full init + prep + push"
@@ -212,7 +182,6 @@ function update_files_on_blog_repo() {
     safe_cd "${PATH_TO_TMP_FOLDER}"
     rm -f "${BLOG_REPO_NAME}/.gitignore"
     cp -f "${PATH_TO_GITIGNORE_WPE}" "${BLOG_REPO_NAME}/.gitignore"
-    echo "[SUB] Creating/updating deploy-seed file"
     touch "${BLOG_REPO_NAME}/deploy-seed"
     echo "wpe-${APP_ENV}-${THIS_TIMESTAMP}" >> "${BLOG_REPO_NAME}/deploy-seed"
   )
@@ -254,18 +223,19 @@ function perform_gitpush() {
 }
 
 ###############################################################################
-# 6. GPG Decryption - Conditionally Called in init()
+# 6. GPG Decryption
 ###############################################################################
+
 function decrypt_env_inside_deploy_folder() {
   echo "[SUB] Decrypting .env for environment: ${APP_ENV}"
-   gpg --quiet --batch --yes --passphrase-file "${GPG_PARAPHRASE_PATH}" \
-       --decrypt --output "${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}" \
-       "${PATH_TO_BLOG_REPO}/${WP_ENV_DIR}/env_${APP_ENV}.gpg"
+  gpg --quiet --batch --yes --passphrase-file "${GPG_PARAPHRASE_PATH}" \
+      --decrypt --output "${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}" \
+      "${PATH_TO_BLOG_REPO}/${WP_ENV_DIR}/env_${APP_ENV}.gpg"
   echo "   (Simulation) Decryption complete, check ${PATH_TO_BLOG_REPO}/${WP_ENV_PATH}"
 }
 
 ###############################################################################
-# 7. Run the requested task
+# 7. Task Dispatcher
 ###############################################################################
 case "$TASK" in
   init)

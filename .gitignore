@@ -3,3 +3,4 @@
 .svn
 *.log
 tmp
+/config/env.sh
