@@ -29,7 +29,7 @@
 #------------------------------------------------------------------------------
 
 ###############################################################################
-# 1. Maximum portability: detect shell, define SCRIPT_DIR, source header.sh
+# Maximum portability: detect shell, define SCRIPT_DIR, source header.sh
 ###############################################################################
 if [ -n "$BASH_VERSION" ]; then
   SCRIPT_SOURCE="${BASH_SOURCE[0]}"
@@ -43,7 +43,7 @@ SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SOURCE")" >/dev/null 2>&1 && pwd -P)"
 source "${SCRIPT_DIR}/header.sh"
 
 ###############################################################################
-# 2. Parse arguments: <environment> <task>
+# Parse arguments: <environment> <task>
 ###############################################################################
 ENVIRONMENT="${1:-}"
 TASK="${2:-}"
@@ -93,35 +93,7 @@ esac
 ###############################################################################
 
 #------------------------------------------------------------------------------
-# 4.1 readme() - Prints an overview including all tasks
-#------------------------------------------------------------------------------
-function readme() {
-  echo "--------------------------------------------------------------------------------"
-  echo "TASKS AVAILABLE:"
-  echo "   1) readme"
-  echo "   2) init"
-  echo "   3) push"
-  echo "   4) deploy (runs init + push in one shot)"
-  echo
-  echo "Usage examples:"
-  echo "  ./deploy.sh dev readme"
-  echo "  ./deploy.sh dev init"
-  echo "  ./deploy.sh dev push"
-  echo "  ./deploy.sh dev deploy"
-  echo
-  echo "NOTE: The Git repo is set in env.sh as BLOG_GIT_REPO. It is not passed as an argument."
-  echo
-  echo "LONG INTRO: The sequence for a deploy is typically as follows:"
-  echo "  1) Clone the blog repo into a tmp folder (via 'init')"
-  echo "  2) Create a branch with a timestamp, run composer, remove unwanted files (via 'push')"
-  echo "  3) Add WP Engine remote + commit + push"
-  echo
-  echo "If you want to do everything in one shot, just run 'deploy' for a quick command."
-  echo "--------------------------------------------------------------------------------"
-}
-
-#------------------------------------------------------------------------------
-# 4.2 init() - Prepares tmp folder, clones blog repo from $BLOG_GIT_REPO,
+# init() - Prepares tmp folder, clones blog repo from $BLOG_GIT_REPO,
 #              optionally decrypts .env if RUN_GPG_DECRYPT=true
 #------------------------------------------------------------------------------
 function init() {
@@ -131,7 +103,7 @@ function init() {
     exit 1
   fi
 
-  echo "--------------------------------------------------------------------------------"
+  print_separator
   echo "[INIT] Removing any previous '${TMP_FOLDER_NAME}' folder..."
   rm -rf "${TMP_FOLDER_NAME}"
 
@@ -163,15 +135,18 @@ function init() {
   fi
 
   echo "[INIT] init() completed."
-  echo "--------------------------------------------------------------------------------"
+  print_separator
 }
 
 #------------------------------------------------------------------------------
-# 4.3 push() - Prepares the local repo (branch, composer, file cleanup) + push
+# prepare_repo_before_push() - Prepares the local repo (branch, composer, file cleanup) + push
 #------------------------------------------------------------------------------
-function push() {
-  echo "--------------------------------------------------------------------------------"
-  echo "[PUSH] Checking out new branch wpe-${APP_ENV}-${THIS_TIMESTAMP}..."
+function prepare_repo_before_push() {
+  print_separator
+  echo "[PREP] Preparing repo before push..."
+
+  # Checkout new branch
+  echo "[PREP] Checking out new branch: wpe-${APP_ENV}-${THIS_TIMESTAMP}"
   (
     safe_cd "${PATH_TO_BLOG_REPO}"
     git branch "wpe-${APP_ENV}-${THIS_TIMESTAMP}"
@@ -179,23 +154,38 @@ function push() {
   )
 
   sub_prep_repo
+
+  echo "[PREP] Repo preparation complete."
+  print_separator
+}
+
+
+#------------------------------------------------------------------------------
+# push() - Prepares the local repo (branch, composer, file cleanup) + push
+#------------------------------------------------------------------------------
+function push() {
+  print_separator
+  echo "[PUSH] Starting push sequence..."
+
   set_upstream
   perform_gitpush
 
-  echo "[PUSH] Done!"
-  echo "--------------------------------------------------------------------------------"
+  echo "[PUSH] Push complete."
+  print_separator
 }
 
+
 #------------------------------------------------------------------------------
-# 4.4 deploy() - A one-step command that calls init + push
+# deploy() - A one-step command that calls init + prep + push
 #------------------------------------------------------------------------------
 function deploy() {
-  echo "--------------------------------------------------------------------------------"
-  echo "[DEPLOY] Doing full init + push"
+  print_separator
+  echo "[DEPLOY] Doing full init + prep + push"
   init
+  prepare_repo_before_push
   push
   echo "[DEPLOY] Done."
-  echo "--------------------------------------------------------------------------------"
+  print_separator
 }
 
 ###############################################################################
@@ -278,11 +268,11 @@ function decrypt_env_inside_deploy_folder() {
 # 7. Run the requested task
 ###############################################################################
 case "$TASK" in
-  readme)
-    readme
-    ;;
   init)
     init
+    ;;
+  prep)
+    prepare_repo_before_push
     ;;
   push)
     push
@@ -292,7 +282,7 @@ case "$TASK" in
     ;;
   *)
     echo "[Error] Unknown task: $TASK"
-    echo "Valid tasks: readme, init, push, deploy"
+    echo "Valid tasks: init, prep, push, deploy"
     exit 1
     ;;
 esac
