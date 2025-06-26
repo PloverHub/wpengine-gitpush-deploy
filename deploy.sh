@@ -212,7 +212,7 @@ function do_composer_install() {
   echo "[SUB] Running Composer install..."
   (
     safe_cd "${PATH_TO_BLOG_REPO}"
-    composer update --no-dev --optimize-autoloader --prefer-dist -vv
+    composer update --no-dev --optimize-autoloader --prefer-dist --no-interaction --no-progress -vv
   )
 }
 
@@ -232,10 +232,14 @@ function remove_ignored_files() {
   echo "[SUB] Removing unwanted files..."
   (
     safe_cd "${PATH_TO_BLOG_REPO}"
-    for item in "${list_of_files_to_delete[@]}"; do
-      echo " - Removing: ${item}"
-      rm -rf "${item}"
-    done
+    if [[ ${#list_of_files_to_delete[@]} -eq 0 ]]; then
+      echo "[Warning] Nothing to delete - list_of_files_to_delete is empty."
+    else
+      for item in "${list_of_files_to_delete[@]}"; do
+        echo " - Removing: ${item}"
+        rm -rf "${item}"
+      done
+    fi
   )
 }
 
