@@ -74,3 +74,10 @@ cd "${SCRIPT_DIR}"
 function safe_cd() {
   cd "$1" || { echo "[Error] Cannot change directory to $1"; exit 1; }
 }
+
+# ------------------------------------------------------------------------------
+# Print a separator line for better readability in output logs.
+# ------------------------------------------------------------------------------
+function print_separator() {
+  echo "--------------------------------------------------------------------------------"
+}
