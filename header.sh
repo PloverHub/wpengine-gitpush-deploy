@@ -67,3 +67,10 @@ fi
 # are evaluated from this location.
 # ------------------------------------------------------------------------------
 cd "${SCRIPT_DIR}"
+
+# ------------------------------------------------------------------------------
+# Reusable function to safely change directories.
+# ------------------------------------------------------------------------------
+function safe_cd() {
+  cd "$1" || { echo "[Error] Cannot change directory to $1"; exit 1; }
+}
