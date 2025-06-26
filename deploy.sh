@@ -140,7 +140,7 @@ function init() {
 
   echo "[INIT] Cloning blog repo from: ${BLOG_GIT_REPO}"
   (
-    cd "${TMP_FOLDER_NAME}" || exit 1
+    safe_cd "${TMP_FOLDER_NAME}"
     rm -rf "${BLOG_REPO_NAME}"
     git clone "${BLOG_GIT_REPO}" "${BLOG_REPO_NAME}"
   )
@@ -173,7 +173,7 @@ function push() {
   echo "--------------------------------------------------------------------------------"
   echo "[PUSH] Checking out new branch wpe-${APP_ENV}-${THIS_TIMESTAMP}..."
   (
-    cd "${PATH_TO_BLOG_REPO}" || exit 1
+    safe_cd "${PATH_TO_BLOG_REPO}"
     git branch "wpe-${APP_ENV}-${THIS_TIMESTAMP}"
     git checkout "wpe-${APP_ENV}-${THIS_TIMESTAMP}"
   )
@@ -211,7 +211,7 @@ function sub_prep_repo() {
 function do_composer_install() {
   echo "[SUB] Running Composer install..."
   (
-    cd "${PATH_TO_BLOG_REPO}" || exit 1
+    safe_cd "${PATH_TO_BLOG_REPO}"
     composer update --no-dev --optimize-autoloader --prefer-dist -vv
   )
 }
@@ -219,7 +219,7 @@ function do_composer_install() {
 function update_files_on_blog_repo() {
   echo "[SUB] Updating .gitignore with ${PATH_TO_GITIGNORE_WPE}"
   (
-    cd "${PATH_TO_TMP_FOLDER}" || exit 1
+    safe_cd "${PATH_TO_TMP_FOLDER}"
     rm -f "${BLOG_REPO_NAME}/.gitignore"
     cp -f "${PATH_TO_GITIGNORE_WPE}" "${BLOG_REPO_NAME}/.gitignore"
     echo "[SUB] Creating/updating deploy-seed file"
@@ -231,7 +231,7 @@ function update_files_on_blog_repo() {
 function remove_ignored_files() {
   echo "[SUB] Removing unwanted files..."
   (
-    cd "${PATH_TO_BLOG_REPO}" || exit 1
+    safe_cd "${PATH_TO_BLOG_REPO}"
     for item in "${list_of_files_to_delete[@]}"; do
       echo " - Removing: ${item}"
       rm -rf "${item}"
@@ -242,7 +242,7 @@ function remove_ignored_files() {
 function set_upstream() {
   echo "[SUB] Setting WP Engine upstream: ${WPE_GIT_BRANCH} -> ${WPE_GIT}"
   (
-    cd "${PATH_TO_BLOG_REPO}" || exit 1
+    safe_cd "${PATH_TO_BLOG_REPO}"
     git remote remove "${WPE_GIT_BRANCH}" 2>/dev/null || true
     git remote add "${WPE_GIT_BRANCH}" "${WPE_GIT}"
     git remote -v
@@ -252,7 +252,7 @@ function set_upstream() {
 function perform_gitpush() {
   echo "[SUB] Committing and pushing to WP Engine..."
   (
-    cd "${PATH_TO_BLOG_REPO}" || exit 1
+    safe_cd "${PATH_TO_BLOG_REPO}"
     git add -A
     git commit -m "deploy - wpe-${APP_ENV}-${THIS_TIMESTAMP}"
     git push "${WPE_GIT_BRANCH}" --force
