@@ -10,6 +10,12 @@ Thumbs.db
 *.swp
 *.log
 .htaccess
+.vscode
+.idea
+.php_cs.cache
+.php-cs-fixer.cache
+wp-content/app/config/.env
+deploy/tmp
 
 #------------------------------------------------------------------------------
 # WordPress Core Files (committed only via official updates)
@@ -46,12 +52,16 @@ Thumbs.db
 /wp-content/object-cache.php
 /wp-content/advanced-cache.php
 /wp-content/wp-cache-config.php
+/wp-content/db.php
+/wp-content/logs/
 
 #------------------------------------------------------------------------------
 # Example Default Themes & Plugins (exclude, override as needed)
 /wp-content/themes/twenty*/
 /wp-content/plugins/akismet*
 /wp-content/plugins/hello.php
+/wp-content/updraft/
+/wp-content/nfwlog/
 
 #------------------------------------------------------------------------------
 # WP Engine Specific
