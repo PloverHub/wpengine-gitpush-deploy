@@ -1,110 +1,82 @@
 #------------------------------------------------------------------------------
-# WP Engine Git Ignore Template
-#
-# This .gitignore is designed to prevent committing local & system files,
-# WP core, large binaries and other items WP Engine disallows or manages.
-#
-# Note: I also add custom ignore list which I saw was necessary in practice.
-#
-# For more reference, see:
-#   https://wpengine.com/git/
-#   https://wpengine.com/support/wp-content/uploads/2022/08/recommended-gitignore-no-wp.txt
-#
-# Usage:
-#   - We will Copy or rename this file to .gitignore in our WordPress root when deploying
-#
+# Global Ignore Rules
+#------------------------------------------------------------------------------
 *~
 .DS_Store
+Thumbs.db
 .svn
 .cvs
 *.bak
 *.swp
-Thumbs.db
+*.log
+.htaccess
 
-# wordpress specific
-wp-config.php
-wp-content/uploads/
-wp-content/blogs.dir/
-wp-content/upgrade/*
-wp-content/upgrade-temp-backup/*
-wp-content/backup-db/*
-wp-content/advanced-cache.php
-wp-content/wp-cache-config.php
-wp-content/cache/*
-wp-content/cache/supercache/*
+#------------------------------------------------------------------------------
+# WordPress Core Files (committed only via official updates)
+#------------------------------------------------------------------------------
+/index.php
+/license.txt
+/readme.html
+/xmlrpc.php
+/wp-*.php
+/wp-admin/
+/wp-includes/
 
-# wpengine specific
-.smushit-status
+#------------------------------------------------------------------------------
+# WP Configuration (exclude secrets)
+#------------------------------------------------------------------------------
+/wp-config.php
+/wp-config-sample.php
+/db-config.php
+
+#------------------------------------------------------------------------------
+# WP Content Directory — Core and Common Files
+#------------------------------------------------------------------------------
+/wp-content/index.php
+/wp-content/languages/
+/wp-content/plugins/index.php
+/wp-content/themes/index.php
+/wp-content/uploads/
+/wp-content/blogs.dir/
+/wp-content/upgrade/
+/wp-content/upgrade-temp-backup/
+/wp-content/backup-db/
+/wp-content/cache/
+/wp-content/cache/supercache/
+/wp-content/object-cache.php
+/wp-content/advanced-cache.php
+/wp-content/wp-cache-config.php
+
+#------------------------------------------------------------------------------
+# Example Default Themes & Plugins (exclude, override as needed)
+/wp-content/themes/twenty*/
+/wp-content/plugins/akismet*
+/wp-content/plugins/hello.php
+
+#------------------------------------------------------------------------------
+# WP Engine Specific
+#------------------------------------------------------------------------------
 .gitattributes
 _wpeprivate*
-wp-content/object-cache.php
+.smushit-status
+wp-content/mysql.sql
+wp-content/mu-plugins/*
+!wp-content/mu-plugins/.gitkeep
+
+# Individual mu-plugins still listed for clarity in legacy repos
 wp-content/mu-plugins/mu-plugin.php
 wp-content/mu-plugins/slt-force-strong-passwords.php
 wp-content/mu-plugins/stop-long-comments.php
 wp-content/mu-plugins/force-strong-passwords*
 wp-content/mu-plugins/wpengine-common*
-wp-content/mysql.sql
 wp-content/mu-plugins/wpengine-security-auditor.php
 wp-content/mu-plugins/wpe-wp-sign-on-plugin*
 
-# wp core (as of 4.9.5)
-/db-config.php
-/index.php
-/license.txt
-/readme.html
-/wp-activate.php
-/wp-app.php
-/wp-atom.php
-/wp-blog-header.php
-/wp-comments-post.php
-/wp-commentsrss2.php
-/wp-config-sample.php
-/wp-cron.php
-/wp-feed.php
-/wp-links-opml.php
-/wp-load.php
-/wp-login.php
-/wp-mail.php
-/wp-rdf.php
-/wp-rss.php
-/wp-rss2.php
-/wp-pass.php
-/wp-register.php
-/wp-settings.php
-/wp-signup.php
-/wp-trackback.php
-/xmlrpc.php
-/wp-admin
-/wp-includes
-/wp-content/index.php
-/wp-content/themes/twentyten
-/wp-content/themes/twentyeleven
-/wp-content/themes/twentytwelve
-/wp-content/themes/twentythirteen
-/wp-content/themes/twentyfourteen
-/wp-content/themes/twentyfifteen
-/wp-content/themes/twentysixteen
-/wp-content/themes/twentyseventeen
-/wp-content/themes/twentyeighteen
-/wp-content/themes/twentynineteen
-/wp-content/themes/twentytwenty
-/wp-content/themes/index.php
-/wp-content/plugins/index.php
-/wp-content/plugins/akismet*
-
-# large/disallowed file types
-# a CDN should be used for these
-*.hqx
-*.bin
-*.exe
-*.dll
-*.deb
-*.dmg
-*.iso
-*.img
-*.msi
-*.msp
-*.msm
+#------------------------------------------------------------------------------
+# Disallowed / Large Binary Files
+# (Store externally or use a CDN)
+#------------------------------------------------------------------------------
+# Audio
 *.mid
 *.midi
 *.kar
@@ -112,6 +84,8 @@ wp-content/mu-plugins/wpe-wp-sign-on-plugin*
 *.ogg
 *.m4a
 *.ra
+
+# Video
 *.3gpp
 *.3gp
 *.mp4
@@ -127,15 +101,35 @@ wp-content/mu-plugins/wpe-wp-sign-on-plugin*
 *.wmv
 *.avi
 
+# Disk Images & Executables
+*.hqx
+*.bin
+*.exe
+*.dll
+*.deb
+*.dmg
+*.iso
+*.img
+*.msi
+*.msp
+*.msm
+
 #------------------------------------------------------------------------------
-# Custom ignore list
+# Composer / Build Artifacts / Dev Tools
 #------------------------------------------------------------------------------
-local-xdebuginfo.php
 /composer.lock
 composer.json
-bin
-wpe-deploy
-deploy
-meta
-wp-content/mu-plugins/*
-wp-content/updraft
+bin/
+wpe-deploy/
+deploy/
+meta/
+local-xdebuginfo.php
+
+#------------------------------------------------------------------------------
+# Notes
+#
+# - Customize theme and plugin exclusions as per project needs.
+# - Do not remove .gitkeep if preserving empty dirs.
+# - Use .gitkeep or .gitignore inside `/uploads` for optional structure.
+# - Always review before staging to avoid unintentional exclusions.
+#------------------------------------------------------------------------------
