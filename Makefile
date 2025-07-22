@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 # Makefile - WP Engine Deploy (Positional Args UX)
 #------------------------------------------------------------------------------
-DEPLOY_SCRIPT := ./deploy.sh
+DEPLOY_SCRIPT := ./deploy/deploy.sh
 VALID_ENVS := dev stag prod
 VALID_TASKS := init prep push deploy
 
